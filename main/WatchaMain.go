@@ -31,8 +31,6 @@ func main() {
 		fmt.Println("Error getting bot congifuration: ", err)
 	}
 
-	fmt.Println(conf.BotToken)
-
 	dg, err := discordgo.New("Bot " + conf.BotToken)
 	if err != nil {
 		fmt.Println("Error starting discord session: ", err)

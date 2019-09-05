@@ -28,10 +28,18 @@ func filterMessages(s *discordgo.Session, m *discordgo.MessageCreate) Command.Me
 		return CommandMsg
 	}
 
-	CommandName := content[:strings.Index(content, " ")]
+	LastCommandIndex := strings.Index(content, " ")
+	if LastCommandIndex < 0 {
+		LastCommandIndex = len(content)
+	}
+	CommandName := content[:LastCommandIndex]
 	CommandName = strings.ToLower(CommandName)
 
-	content = content[len(CommandName)+1:]
+	if len(CommandName) == len(content) {
+		content = ""
+	} else {
+		content = content[len(CommandName)+1:]
+	}
 
 	CommandMsg = Command.Message{Command: CommandName, Content: content}
 

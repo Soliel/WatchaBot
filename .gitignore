@@ -1,1 +1,3 @@
 /ConfigurationFiles/*
+/.vscode/*
+*.exe
