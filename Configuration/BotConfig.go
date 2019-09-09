@@ -1,4 +1,4 @@
-package Configuration
+package configuration
 
 import (
 	"encoding/json"
@@ -6,14 +6,8 @@ import (
 
 //BotConfig hold general configuration
 type BotConfig struct {
-	BotToken     string `json:"bot_token"`
-	BotPrefix    string `json:"bot_prefix"`
-	DatabaseIP   string `json:"database_ip"`
-	DatabaseUser string `json:"database_user"`
-	DatabasePass string `json:"database_password"`
-	DatabasePort string `json:"database_port"`
-	DatabaseName string `json:"database_name"`
-	SSLMode      string `json:"ssl_mode"`
+	BotToken  string `json:"bot_token"`
+	BotPrefix string `json:"bot_prefix"`
 }
 
 //LoadConfig loads the main config file for the application

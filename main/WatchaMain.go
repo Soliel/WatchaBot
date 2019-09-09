@@ -8,25 +8,31 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 
-	"github.com/soliel/WatchaBot/Command"
-	"github.com/soliel/WatchaBot/Configuration"
+	"github.com/soliel/WatchaBot/command"
+	"github.com/soliel/WatchaBot/configuration"
 )
 
 var (
-	conf    *Configuration.BotConfig
-	handler *Command.Handler
+	conf    *configuration.BotConfig
+	dbConf  *configuration.DatabaseConfig
+	handler *command.Handler
 )
 
 func main() {
-	loadConfBytes, err := ioutil.ReadFile("../ConfigurationFiles/WatchaConf.json")
+	loadBotConfBytes, err := ioutil.ReadFile("../ConfigurationFiles/WatchaConf.json")
+	loadDbConfBytes, err := ioutil.ReadFile("../ConfigurationFiles/DbConf.json")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	conf = new(Configuration.BotConfig)
-	err = conf.LoadConfig(loadConfBytes)
+	conf = new(configuration.BotConfig)
+	dbConf = new(configuration.DatabaseConfig)
+	err = conf.LoadConfig(loadBotConfBytes)
+	err = dbConf.LoadConfig(loadDbConfBytes)
 	if err != nil {
 		fmt.Println("Error getting bot congifuration: ", err)
 	}
@@ -44,16 +50,22 @@ func main() {
 		fmt.Println("Error opening communication with discord: ", err)
 		return
 	}
+	defer dg.Close()
 
-	handler = Command.CreateHandler()
+	db, err := gorm.Open("postgres", dbConf.CreateDatabaseString())
+	if err != nil {
+		fmt.Println("Error opening database connection: ", err)
+		return
+	}
+	defer db.Close()
+
+	handler = command.CreateHandler()
 	registerCommands()
 
 	fmt.Println("Bot is now running. Press CTRL-C to exit.")
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
-
-	dg.Close()
 }
 
 func onMessageReceived(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -70,6 +82,6 @@ func registerCommands() {
 	handler.Register("ping", ping)
 }
 
-func ping(context Command.Context) {
+func ping(context command.Context) {
 	context.Session.ChannelMessageSend(context.Channel.ID, "PONG")
 }

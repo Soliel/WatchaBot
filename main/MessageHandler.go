@@ -5,11 +5,11 @@ import (
 
 	"strings"
 
-	"github.com/soliel/WatchaBot/Command"
+	"github.com/soliel/WatchaBot/command"
 )
 
-func filterMessages(s *discordgo.Session, m *discordgo.MessageCreate) Command.Message {
-	var CommandMsg Command.Message
+func filterMessages(s *discordgo.Session, m *discordgo.MessageCreate) command.Message {
+	var CommandMsg command.Message
 
 	if m.Author.ID == s.State.User.ID {
 		return CommandMsg
@@ -41,7 +41,7 @@ func filterMessages(s *discordgo.Session, m *discordgo.MessageCreate) Command.Me
 		content = content[len(CommandName)+1:]
 	}
 
-	CommandMsg = Command.Message{Command: CommandName, Content: content}
+	CommandMsg = command.Message{Command: CommandName, Content: content}
 
 	return CommandMsg
 }
